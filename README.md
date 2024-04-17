@@ -1,3 +1,3 @@
 # WavCaps
 
-A small project to introduce myself to Docker Compose 123
+A small project to introduce myself to Docker Compose
