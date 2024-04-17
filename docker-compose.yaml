@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  controller:
+    build: ./controller
+    image: controller
+    ports:
+      - "5000:5000"
+  interface:
+    build: ./interface
+    image: interface
+    ports:
+      - "5001:5001"
+    depends_on:
+      - controller
