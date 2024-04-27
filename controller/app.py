@@ -1,12 +1,13 @@
 import requests
-
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route('/get_quote')
+@app.route('/get_quote', methods=['POST'])
 def get_quote():
-    quote = requests.get('http://model:5002/quote').text
+    data = request.json
+    data['random_seed'] = int(data['random_seed'])
+    quote = requests.post('http://model:5002/quote', json=data).text
     return quote
 
 

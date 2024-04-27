@@ -1,6 +1,5 @@
 import numpy as np
-
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -13,8 +12,10 @@ quotes = [
     "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success. -James Cameron",
 ]
 
-@app.route('/quote')
+@app.route('/quote', methods=['POST'])
 def quote():
+    data = request.json
+    np.random.seed(data['random_seed'])
     quote = np.random.choice(quotes)
     return quote
 

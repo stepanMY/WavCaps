@@ -1,3 +1,6 @@
 .venv
 dump
 __pycache__
+cache_data
+db_data
+logs

@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
@@ -7,10 +7,11 @@ app = Flask(__name__)
 def home():
     return render_template('app_frontend.html', prediction_text='')
 
-@app.route('/predict', methods=['GET','POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    a_description = request.form.get('description')
-    quote = requests.get('http://controller:5001/get_quote').text
+    random_seed = request.form.get('description')
+    data = {'random_seed': random_seed}
+    quote = requests.post('http://controller:5001/get_quote', json=data).text
     return render_template('app_frontend.html', prediction_text=quote)
 
 if __name__ == '__main__':
