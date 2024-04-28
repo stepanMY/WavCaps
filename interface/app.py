@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
+    app.logger.info('MANUAL--INTERFACE--%s', 'app launched')
     return render_template('app_frontend.html', prediction_text='')
 
 @app.route('/predict', methods=['GET', 'POST'])
