@@ -2,10 +2,11 @@ import requests
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
+LOGGING_PREFIX = 'MANUAL--INTERFACE--{}'
 
 @app.route('/')
 def home():
-    app.logger.info('MANUAL--INTERFACE--%s', 'app launched')
+    app.logger.info(LOGGING_PREFIX.format('Landing page opened'))
     return render_template('app_frontend.html', prediction_text='')
 
 @app.route('/predict', methods=['GET', 'POST'])

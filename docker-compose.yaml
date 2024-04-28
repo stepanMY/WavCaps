@@ -14,6 +14,8 @@ services:
       - "5001:5001"
     depends_on:
       - model
+      - cache
+      - db
   model:
     build: ./model
     image: model
@@ -24,6 +26,8 @@ services:
     command: --port 5003
     ports:
       - "5003:5003"
+    volumes:
+        - ./cache_data:/data
   db:
     image: mongo
     command: mongod --port 5004
