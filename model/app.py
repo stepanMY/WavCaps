@@ -1,6 +1,9 @@
+import json
 import numpy as np
 from flask import Flask, request
 
+SAMPLE_RATE = 16000
+RANDOM_SEED = 42
 app = Flask(__name__)
 
 quotes = [
@@ -14,8 +17,12 @@ quotes = [
 
 @app.route('/quote', methods=['POST'])
 def quote():
-    data = request.json
-    np.random.seed(data['random_seed'])
+    wav = np.frombuffer(request.files['wav'].read(), dtype=np.float32)
+    params = json.loads(request.files['params'].read())
+    if params['random_seed']:
+        np.random.seed(int(abs(wav[0] * 1000)) + params['random_seed'])
+    else:
+        np.random.seed(int(abs(wav[0] * 1000)))
     quote = np.random.choice(quotes)
     return quote
 

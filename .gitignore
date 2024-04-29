@@ -4,3 +4,5 @@ __pycache__
 cache_data
 db_data
 logs
+notebooks
+wav_examples

@@ -1,20 +1,28 @@
 import requests
+import json
 from flask import Flask, request, render_template
 
-app = Flask(__name__)
+
+SAMPLE_RATE = 16000
 LOGGING_PREFIX = 'MANUAL--INTERFACE--{}'
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
+
 
 @app.route('/')
 def home():
     app.logger.info(LOGGING_PREFIX.format('Landing page opened'))
     return render_template('app_frontend.html', prediction_text='')
 
-@app.route('/predict', methods=['GET', 'POST'])
+
+@app.route('/predict', methods=['POST'])
 def predict():
-    random_seed = request.form.get('description')
-    data = {'random_seed': random_seed}
-    quote = requests.post('http://controller:5001/get_quote', json=data).text
+    wavfile = request.files.get('wav')
+    params = {'random_seed': request.form.get('random_seed'), 'do_sample': request.form.get('do_sample')}
+    files = {'wavfile': wavfile, 'params': json.dumps(params)}
+    quote = requests.post('http://controller:5001/get_quote', files=files).text
     return render_template('app_frontend.html', prediction_text=quote)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)

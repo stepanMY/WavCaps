@@ -73,7 +73,7 @@ h3 {
 }
 
 /* Add a black background color to the top navigation */
-.topnav {
+/*.topnav {
   background-color: #;
   overflow: hidden;
 }
@@ -195,3 +195,19 @@ input {
   font-size:14pt;
 }
 
+.mytext {
+  height:20px;
+  width: 100px;
+  float: right;
+}
+
+.right_elem {
+  float: right;
+}
+
+.my_input {
+  border: 0px;
+  height:37px;
+  width:275px;
+  font-size:14pt;
+}

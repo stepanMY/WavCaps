@@ -3,37 +3,51 @@ import json
 import redis
 import pymongo
 import datetime
+import librosa
+import xxhash
 from flask import Flask, request
 
-app = Flask(__name__)
+
+SAMPLE_RATE = 16000
+RANDOM_SEED = 42
 LOGGING_PREFIX = 'MANUAL--CONTROLLER--{}'
+app = Flask(__name__)
 cache = redis.Redis(host='cache', port=5003, decode_responses=True)
 db_client = pymongo.MongoClient(host='db', port=5004)
 db = db_client['service']['collection']
 
 
-def preprocess_data(data):
-    data['random_seed'] = int(data['random_seed'])
-    return data
+def preprocess_params(params):
+    if params['random_seed']:
+        params['random_seed'] = int(params['random_seed'])
+    if params['do_sample']:
+        params['do_sample'] = bool(int(params['do_sample']))
+    else:
+        params['do_sample'] = False
+    return params
 
 
 @app.route('/get_quote', methods=['POST'])
 def get_quote():
-    data = request.json
-    data = preprocess_data(data)
-    cache_result = cache.get(data['random_seed'])
-    if cache_result and json.loads(cache_result)['params'] == data:
-        quote = json.loads(cache_result)['result']
+    wavfile = request.files['wavfile']
+    wav, _ = librosa.load(wavfile, sr=SAMPLE_RATE)
+    params = json.loads(request.files['params'].read())
+    params = preprocess_params(params)
+    wavhash = xxhash.xxh64(wav, seed=RANDOM_SEED).hexdigest()
+    cache_result = cache.get(wavhash)
+    if cache_result and json.loads(cache_result)['params'] == params:
+        quote = json.loads(cache_result)['quote']
         app.logger.info(LOGGING_PREFIX.format('Got result from cache'))
         from_cache = True
     else:
-        quote = requests.post('http://model:5002/quote', json=data).text
-        cache.set(data['random_seed'], json.dumps({'result': quote, 'params': data}))
+        files = {'params': json.dumps(params), 'wav': wav.tobytes()}
+        quote = requests.post('http://model:5002/quote', files=files).text
+        cache.set(wavhash, json.dumps({'quote': quote, 'params': params}))
         app.logger.info(LOGGING_PREFIX.format('Got result from model'))
         from_cache = False
-    db_object = {'random_seed': data['random_seed'],
+    db_object = {'wavhash': wavhash,
                  'quote': quote,
-                 'params': data,
+                 'params': params,
                  'from_cache': from_cache,
                  'datetime': datetime.datetime.now(tz=datetime.timezone.utc)}
     db.insert_one(db_object)
