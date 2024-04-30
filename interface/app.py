@@ -20,7 +20,11 @@ def predict():
     wavfile = request.files.get('wav')
     params = {'random_seed': request.form.get('random_seed'), 'do_sample': request.form.get('do_sample')}
     files = {'wavfile': wavfile, 'params': json.dumps(params)}
-    quote = requests.post('http://controller:5001/get_quote', files=files).text
+    result = requests.post('http://controller:5001/get_quote', files=files)
+    if result.status_code != 200:
+        quote = 'Wrong input!'
+    else:
+        quote = result.text
     return render_template('app_frontend.html', prediction_text=quote)
 
 
