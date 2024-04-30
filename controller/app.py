@@ -28,6 +28,10 @@ def preprocess_params(params):
     return params
 
 
+def preprocess_wav(wav):
+    return wav[:int(SAMPLE_RATE * 30)]
+
+
 @app.route('/get_quote', methods=['POST'])
 def get_quote():
     wavfile = request.files['wavfile']
@@ -35,6 +39,7 @@ def get_quote():
     if size == 0:
         return 'No file', 400
     wav, _ = librosa.load(wavfile, sr=SAMPLE_RATE)
+    wav = preprocess_wav(wav)
     params = json.loads(request.files['params'].read())
     params = preprocess_params(params)
     wavhash = xxhash.xxh64(wav, seed=RANDOM_SEED).hexdigest()
