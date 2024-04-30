@@ -25,6 +25,14 @@ def preprocess_params(params):
         params['do_sample'] = bool(int(params['do_sample']))
     else:
         params['do_sample'] = False
+    if params['num_beams']:
+        params['num_beams'] = int(params['num_beams'])
+    else:
+        params['num_beams'] = 1
+    if params['top_p']:
+        params['top_p'] = float(params['top_p'])
+    else:
+        params['top_p'] = 0.95
     return params
 
 

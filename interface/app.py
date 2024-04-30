@@ -18,7 +18,8 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     wavfile = request.files.get('wav')
-    params = {'random_seed': request.form.get('random_seed'), 'do_sample': request.form.get('do_sample')}
+    params = {'random_seed': request.form.get('random_seed'), 'do_sample': request.form.get('do_sample'), 
+              'num_beams': request.form.get('num_beams'), 'top_p': request.form.get('top_p')}
     files = {'wavfile': wavfile, 'params': json.dumps(params)}
     result = requests.post('http://controller:5001/get_quote', files=files)
     if result.status_code != 200:

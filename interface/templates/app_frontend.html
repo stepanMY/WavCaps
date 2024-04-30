@@ -10,11 +10,18 @@
 				<label form="wav">Wav file:</label>
 				<input type="file" id="wav" name="wav" accept=".wav" class="my_input">
 				<button type="submit" class=cv_btn>Caption</button>
+				<br>
 				<input type="number" id="random_seed" name="random_seed" class="mytext" min="0" max="4294967295" value="42">
 				<label form="random_seed" class="right_elem">random_seed:</label>
 				<br>
 				<input type="number" id="do_sample" name="do_sample" class="mytext" min="0" max="1" value="0">
 				<label form="do_sample" class="right_elem">do_sample:</label>
+				<br>
+				<input type="number" id="num_beams" name="num_beams" class="mytext" min="1" max="5" value="1">
+				<label form="num_beams" class="right_elem">num_beams:</label>
+				<br>
+				<input type="number" id="top_p" name="top_p" class="mytext" min="0" max="1" value="0.95" step="0.01">
+				<label form="top_p" class="right_elem">top_p:</label>
 			</form>
 			<br>
 			<br>
