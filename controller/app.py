@@ -21,6 +21,8 @@ db = db_client['service']['collection']
 def preprocess_params(params):
     if params['random_seed']:
         params['random_seed'] = int(params['random_seed'])
+    else:
+        del params['random_seed']
     if params['do_sample']:
         params['do_sample'] = bool(int(params['do_sample']))
     else:
@@ -40,8 +42,8 @@ def preprocess_wav(wav):
     return wav[:int(SAMPLE_RATE * 30)]
 
 
-@app.route('/get_quote', methods=['POST'])
-def get_quote():
+@app.route('/get_caption', methods=['POST'])
+def get_caption():
     wavfile = request.files['wavfile']
     size = os.fstat(wavfile.fileno()).st_size
     if size == 0:
@@ -53,27 +55,27 @@ def get_quote():
     wavhash = xxhash.xxh64(wav, seed=RANDOM_SEED).hexdigest()
     cache_result = cache.get(wavhash)
     if cache_result and json.loads(cache_result)['params'] == params:
-        quote = json.loads(cache_result)['quote']
+        caption = json.loads(cache_result)['caption']
         app.logger.info(LOGGING_PREFIX.format('Got result from the cache'))
         from_cache = True
     else:
         files = {'params': json.dumps(params), 'wav': wav.tobytes()}
-        result = requests.post('http://model:5002/quote', files=files)
+        result = requests.post('http://model:5002/get_caption', files=files)
         if result.status_code == 200:
-            quote = result.text
-            cache.set(wavhash, json.dumps({'quote': quote, 'params': params}))
+            caption = result.text
+            cache.set(wavhash, json.dumps({'caption': caption, 'params': params}))
             app.logger.info(LOGGING_PREFIX.format('Got result from the model'))
             from_cache = False
         else:
             app.logger.info(LOGGING_PREFIX.format("Didn't get result from the model"))
             return 'Wrong input', 400
     db_object = {'wavhash': wavhash,
-                 'quote': quote,
+                 'caption': caption,
                  'params': params,
                  'from_cache': from_cache,
                  'datetime': datetime.datetime.now(tz=datetime.timezone.utc)}
     db.insert_one(db_object)
-    return quote
+    return caption
 
 
 if __name__ == '__main__':
