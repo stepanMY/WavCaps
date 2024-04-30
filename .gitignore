@@ -1,4 +1,5 @@
 .venv
+.vscode
 dump
 __pycache__
 cache_data
@@ -6,3 +7,4 @@ db_data
 logs
 notebooks
 wav_examples
+pretrained_models
