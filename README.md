@@ -14,3 +14,5 @@
 ![img](presentation/service.png)
 ### Пример использования
 ![gif](presentation/service.gif)
+### Дальнейшая работа
+С помощью gunicorn и nginx сделать приложение доступным для Интернета.
