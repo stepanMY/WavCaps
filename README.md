@@ -13,4 +13,4 @@
 ### Схема
 ![img](presentation/service.png)
 ### Пример использования
-gif
+![gif](presentation/service.gif)
